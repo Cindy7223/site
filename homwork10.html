@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>气球项目 - 测试</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #f0f0f0;
+    }
+
+    @keyframes fly {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-105vh) scale(0.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  class Ballon {
+    constructor(id, color, diameter, speed) {
+      this.id = id;
+      this.color = color;
+      this.diameter = diameter;
+      this.speed = speed;
+    }
+
+    make() {
+      let dv = document.createElement('div');
+      dv.id = this.id;
+      dv.style.cssText = `
+          width: ${this.diameter}px;
+          height: ${this.diameter}px;
+          border-radius: ${this.diameter / 2}px;
+          background-color: ${this.color};
+          position: absolute;
+          left: ${Math.random() * 100}vw;
+          bottom: ${-this.diameter}px; /* 从视口下方开始 */
+      `;
+      document.body.appendChild(dv);
+      //console.log(`Created balloon ${this.id}`); // 调试：确认元素是否被创建和添加
+    }
+
+    rise() {
+      let dv = document.getElementById(this.id);
+      if (dv) {
+        dv.style.animationName = 'fly';
+        const animationDuration = (700 / this.speed);
+        dv.style.animationDuration = animationDuration + 's';
+        dv.style.animationTimingFunction = 'linear';
+        dv.style.animationFillMode = 'forwards';
+        dv.addEventListener('animationend', () => {
+          dv.remove();
+          //console.log(`Removed balloon ${this.id}`); // 调试：确认元素是否被移除
+        });
+        //console.log(`Started animation for balloon ${this.id}`); // 调试：确认动画是否启动
+      } else {
+         //console.error(`Error: Element with ID ${this.id} not found for animation.`); // 调试：如果找不到元素会报错
+      }
+    }
+  }
+
+  const numBalloons = 20; // 大幅减少数量以便测试
+  const colors = ['#ff0000', '#0000ff', '#00ff00', '#800080', '#ffa500', '#ffc0cb', '#00ffff', '#ff00ff', '#ffff00', '#32cd32'];
+  const minDiameter = 15;
+  const maxDiameter = 50;
+  const minDuration = 15;
+  const maxDuration = 60;
+
+  console.log(`尝试创建 ${numBalloons} 个气球...`);
+
+  for (let i = 0; i < numBalloons; i++) {
+    const balloonId = 'balloon-' + i;
+    // **修正：从数组中随机选择一个颜色**
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    const randomDiameter = Math.round(Math.random() * (maxDiameter - minDiameter) + minDiameter);
+    const randomDuration = Math.random() * (maxDuration - minDuration) + minDuration;
+    const speedForConstructor = 700 / randomDuration;
+
+    const balloon = new Ballon(balloonId, randomColor, randomDiameter, speedForConstructor);
+
+    // 直接创建和启动动画，不加延迟
+    balloon.make();
+    balloon.rise();
+  }
+
+  console.log("气球创建循环已完成。");
+
+</script>
+
+</body>
+</html>
